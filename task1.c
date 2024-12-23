@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-int ARR_SIZE = 12;
-int MAX_NUMBER = 10;
+int ARR_SIZE = 600000;
+int MAX_NUMBER = 50;
 
 // assumptions:
 // the number of numbers in the array is divisible by size
@@ -23,11 +23,11 @@ int main(int argc, char *argv[])
     int temp_arr[elements_per_process];  // the temporary array for calculating the partial sums
     int final_arr[ARR_SIZE];  // the array of the partial sums
     double start_t, end_t;
-    double prog_end;
+    // double prog_end;
     // Generating The random array
     if (rank == 0)
     {
-        start_t = MPI_Wtime();
+        // start_t = MPI_Wtime();
         srand(time(NULL));
 
         // creating the random first array
@@ -38,14 +38,15 @@ int main(int argc, char *argv[])
         printf("\n");
         double end_t = MPI_Wtime();
 
-        printf("process 0 generated: %d elements with a maximum value of %d in %F\n\n", ARR_SIZE, MAX_NUMBER, end_t - start_t);  // to complete
+        printf("process 0 generated: %d elements with a maximum value of %d\n\n", ARR_SIZE, MAX_NUMBER);  // to complete
     }
     start_t = MPI_Wtime();
     MPI_Scatter(first_arr, elements_per_process, MPI_INT, temp_arr, elements_per_process, MPI_INT, 0, MPI_COMM_WORLD);
-    end_t = MPI_Wtime();
+    // end_t = MPI_Wtime();
     MPI_Barrier(MPI_COMM_WORLD);
 
     // testing what everyone recieved
+    /*
     for (int i = 0; i < size; i++) {
         MPI_Barrier(MPI_COMM_WORLD);
         if (rank == i) {
@@ -56,6 +57,7 @@ int main(int argc, char *argv[])
             printf("\n");
         }
     }
+    */
     MPI_Barrier(MPI_COMM_WORLD);
 
 
@@ -67,6 +69,7 @@ int main(int argc, char *argv[])
     }
 
     // Testing the result of the partial sums of the subarray
+    /*
     for (int i = 0; i < size; i++) {
         MPI_Barrier(MPI_COMM_WORLD);
         if (rank == i) {
@@ -77,6 +80,7 @@ int main(int argc, char *argv[])
             printf(" and the maximum is: %d \n", max_int);
         }
     }
+    */
     MPI_Barrier(MPI_COMM_WORLD);
 
 
@@ -93,16 +97,19 @@ int main(int argc, char *argv[])
 
     // Gathering each subarray to the the final results.
     MPI_Gather(temp_arr, elements_per_process, MPI_INT, final_arr, elements_per_process, MPI_INT, 0, MPI_COMM_WORLD);
-    prog_end = MPI_Wtime();
+    // prog_end = MPI_Wtime();
     MPI_Barrier(MPI_COMM_WORLD);
     // Printing the final results
+    end_t = MPI_Wtime();
     if (rank == 0){
         printf("\nthe final results are: ");
         for (int i = 0; i < ARR_SIZE; i++){
             printf("%d ", final_arr[i]);
         }
-        printf("\nin %Fs\n", prog_end - prog_start);
+        printf("\n");
+        printf("this took %fs\n", end_t - start_t);
     }
+
 
 
     MPI_Barrier(MPI_COMM_WORLD);
