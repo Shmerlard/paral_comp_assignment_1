@@ -12,7 +12,6 @@ int MAX_NUMBER = 50;
 int main(int argc, char *argv[])
 {
     // Initialization
-    double prog_start = MPI_Wtime();
     int rank, size, type = 99;
     MPI_Status status;
     MPI_Init(&argc, &argv);
